@@ -1,0 +1,37 @@
+apps:
+  - descriptor: toolbox
+    icon_name: jetbrains-toolbox
+  - descriptor: android
+    variants:
+      - descriptor: beta
+        icon_name: android-studio-beta
+      - descriptor: canary
+        icon_name: android-studio-canary
+      - descriptor: null
+        icon_name: android-studio
+  - descriptor: intellij
+    icon_name: intellij
+  - descriptor: pycharm
+    variants:
+      - descriptor: education
+        icon_name: pycharmedu
+      - descriptor: null
+        icon_name: pycharm
+  - descriptor: dataspell
+    icon_name: dataspell
+  - descriptor: datagrip
+    icon_name: datagrip
+  - descriptor: webstorm
+    icon_name: webstorm
+  - descriptor: clion
+    icon_name: clion
+  - descriptor: php
+    icon_name: phpstorm
+  - descriptor: rider
+    icon_name: rider
+  - descriptor: goland
+    icon_name: goland
+  - descriptor: mps
+    icon_name: mps
+  - descriptor: ruby
+    icon_name: rubymine
