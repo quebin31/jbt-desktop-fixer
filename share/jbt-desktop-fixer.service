@@ -1,0 +1,9 @@
+[Unit]
+Description=JetBrains Toolbox desktop fixer
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/env jbt-desktop-fixer watch
+
+[Install]
+WantedBy=default.target

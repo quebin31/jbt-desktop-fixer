@@ -1,3 +1,5 @@
+use std::fs::File;
+use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 
@@ -20,6 +22,8 @@ pub struct App {
 }
 
 impl App {
+    const SERVICE_FILE_CONTENTS: &str = include_str!("../share/jbt-desktop-fixer.service");
+
     pub fn new() -> Self {
         Self { cli: Cli::parse() }
     }
@@ -108,6 +112,16 @@ impl App {
     }
 
     fn copy_service(&self) -> Result<()> {
-        todo!()
+        log::info!("Copying service file");
+        let destination = dirs::config_dir()
+            .wrap_err("Couldn't get default config dir")?
+            .join("systemd/user/jbt-desktop-fixer.service");
+
+        let mut file = File::create(&destination).wrap_err("Couldn't create service file")?;
+        write!(file, "{}", Self::SERVICE_FILE_CONTENTS)
+            .wrap_err("Couldn't copy service contents")?;
+
+        log::info!("Service file copied");
+        Ok(())
     }
 }
