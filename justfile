@@ -6,4 +6,4 @@ build-release:
     @[ -x "$(command -v upx)" ] && upx -q --best target/release/{{bin}} || true
 
 install PATH: build-release
-    install target/release/{{bin}} {{PATH}}
+    install -Dm755 target/release/{{bin}} {{PATH}}
