@@ -1,0 +1,21 @@
+[apps]
+toolbox = "jetbrains-toolbox"
+intellij = "intellij"
+dataspell = "dataspell"
+datagrip = "datagrip"
+webstorm = "webstorm"
+clion = "clion"
+php = "phpstorm"
+rider = "rider"
+goland = "goland"
+mps = "mps"
+ruby = "rubymine"
+
+[apps.android]
+default = "android-studio"
+beta = "android-studio-beta"
+canary = "android-studio-canary"
+
+[apps.pycharm]
+default = "pycharm"
+edu = "pycharmedu"

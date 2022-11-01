@@ -1,5 +1,4 @@
-use std::fs::File;
-use std::io::BufReader;
+use std::collections::HashMap;
 use std::path::Path;
 
 use eyre::Context;
@@ -8,65 +7,54 @@ use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
 pub struct Config {
-    pub apps: Vec<JbApp>,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct JbApp {
-    pub descriptor: String,
-    #[serde(flatten)]
-    pub single_or_multiple: SingleOrMultiple,
+    pub apps: HashMap<String, IconOrVariants>,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(untagged)]
-pub enum SingleOrMultiple {
-    Single { icon_name: String },
-    Multiple { variants: Vec<Variant> },
-}
-
-#[derive(Debug, Deserialize)]
-pub struct Variant {
-    pub descriptor: Option<String>,
-    pub icon_name: String,
+pub enum IconOrVariants {
+    Icon(String),
+    Variants(HashMap<String, String>),
 }
 
 impl Config {
-    const DEFAULT_CONFIG_STR: &str = include_str!("../share/config.yaml");
+    const DEFAULT_CONFIG_STR: &str = include_str!("../share/config.toml");
 
     pub fn default() -> Result<Self> {
-        serde_yaml::from_str(Self::DEFAULT_CONFIG_STR).wrap_err("Failed to parse default config")
+        toml::from_str(Self::DEFAULT_CONFIG_STR).wrap_err("Failed to parse default config")
     }
 
     pub fn from_path(path: impl AsRef<Path>) -> Result<Self> {
-        let file = File::open(path).wrap_err("Failed to open config file")?;
-        let reader = BufReader::new(file);
-        serde_yaml::from_reader(reader).wrap_err("Failed to parse config")
+        let contents = std::fs::read_to_string(path).wrap_err("Failed to open config file")?;
+        toml::from_str(&contents).wrap_err("Failed to parse config")
     }
 
     pub fn icon_name_for<'a>(&'a self, name: &str) -> Option<&'a str> {
         let name = name.to_lowercase();
-        for app in self.apps.iter() {
-            match &app.single_or_multiple {
-                SingleOrMultiple::Single { icon_name } => {
-                    if name.contains(&app.descriptor) {
-                        return Some(icon_name);
+        for (app_key, icon_or_variants) in self.apps.iter() {
+            match icon_or_variants {
+                IconOrVariants::Icon(icon) => {
+                    if name.contains(app_key) {
+                        return Some(icon);
                     }
                 }
 
-                SingleOrMultiple::Multiple { variants } => {
-                    if !name.contains(&app.descriptor) {
+                IconOrVariants::Variants(variants) => {
+                    if !name.contains(app_key) {
                         continue;
                     }
 
-                    for variant in variants.iter() {
-                        if let Some(descriptor) = &variant.descriptor {
-                            if name.contains(descriptor) {
-                                return Some(&variant.icon_name);
-                            }
-                        } else {
-                            return Some(&variant.icon_name);
-                        };
+                    let mut default_icon = None;
+                    for (variant_key, variant_icon) in variants.iter() {
+                        if variant_key == "default" {
+                            default_icon = Some(variant_icon);
+                        } else if name.contains(variant_key) {
+                            return Some(variant_icon);
+                        }
+                    }
+
+                    if let Some(default_icon) = default_icon {
+                        return Some(default_icon);
                     }
                 }
             }

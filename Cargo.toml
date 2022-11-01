@@ -14,7 +14,7 @@ eyre = "0.6.8"
 log = "0.4.17"
 notify = "5.0.0"
 serde = { version = "1.0.147", features = ["derive"] }
-serde_yaml = "0.9.14"
+toml = "0.5.9"
 
 [profile.release]
 opt-level = "z"
