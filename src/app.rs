@@ -118,8 +118,10 @@ impl App {
             .join("systemd/user/jbt-desktop-fixer.service");
 
         let mut file = File::create(&destination).wrap_err("Couldn't create service file")?;
-        write!(file, "{}", Self::SERVICE_FILE_CONTENTS)
-            .wrap_err("Couldn't copy service contents")?;
+        let exec_path = std::env::current_exe()?;
+        let contents =
+            Self::SERVICE_FILE_CONTENTS.replace("{{exec}}", &exec_path.display().to_string());
+        write!(file, "{}", contents).wrap_err("Couldn't copy service contents")?;
 
         log::info!("Service file copied");
         Ok(())

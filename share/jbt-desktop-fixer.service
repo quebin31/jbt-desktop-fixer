@@ -3,7 +3,7 @@ Description=JetBrains Toolbox desktop fixer
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/env jbt-desktop-fixer watch
+ExecStart={{exec}} watch
 
 [Install]
 WantedBy=default.target
