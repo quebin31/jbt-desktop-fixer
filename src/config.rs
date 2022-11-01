@@ -21,7 +21,15 @@ impl Config {
     const DEFAULT_CONFIG_STR: &str = include_str!("../share/config.toml");
 
     pub fn default() -> Result<Self> {
-        toml::from_str(Self::DEFAULT_CONFIG_STR).wrap_err("Failed to parse default config")
+        let config_path = dirs::config_dir()
+            .map(|p| p.join("jbt-desktop-fixer/config.toml"))
+            .filter(|p| p.exists());
+
+        if let Some(path) = config_path {
+            Self::from_path(path)
+        } else {
+            toml::from_str(Self::DEFAULT_CONFIG_STR).wrap_err("Failed to parse default config")
+        }
     }
 
     pub fn from_path(path: impl AsRef<Path>) -> Result<Self> {
