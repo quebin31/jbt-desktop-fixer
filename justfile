@@ -7,3 +7,5 @@ build-release:
 
 install PATH: build-release
     install -Dm755 target/release/{{bin}} {{PATH}}
+
+install-local: (install "~/.local/bin")
